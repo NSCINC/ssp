@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="logo.png" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚛️ SSP ⚛️</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5; /* Off-white */
+            color: #003366; /* Azul escuro */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: #fff; /* Branco */
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3); /* Vermelho */
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .logo {
+            max-width: 100px;
+            margin-bottom: 10px;
+        }
+        h1 {
+            color: #003366; /* Azul escuro */
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            border-radius: 5px;
+            border: 1px solid #003366; /* Azul escuro */
+            padding: 10px;
+            font-family: monospace;
+            font-size: 1em;
+            resize: vertical;
+            background-color: #f0f0f0; /* Cinza claro */
+            color: #003366; /* Azul escuro */
+            margin-bottom: 20px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        textarea::placeholder {
+            color: #003366; /* Azul escuro */
+        }
+        textarea:focus {
+            border-color: #ff0000; /* Vermelho */
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #003366; /* Azul escuro */
+            background-color: #f0f0f0; /* Cinza claro */
+            color: #003366; /* Azul escuro */
+            font-size: 1em;
+            outline: none;
+        }
+        button {
+            background-color: #ff0000; /* Vermelho */
+            color: #fff; /* Branco */
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+            margin-bottom: 20px;
+            outline: none;
+        }
+        button:hover {
+            background-color: #cc0000; /* Vermelho mais escuro */
+            color: #fff; /* Branco */
+        }
+        button:active {
+            background-color: #b30000; /* Vermelho ainda mais escuro */
+            color: #fff; /* Branco */
+        }
+        .output {
+            background: #f0f0f0; /* Cinza claro */
+            padding: 15px;
+            border-radius: 5px;
+            color: #003366; /* Azul escuro */
+            width: 100%;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .error-message {
+            color: #ff0000; /* Vermelho */
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 0.8em;
+            color: #003366; /* Azul escuro */
+            text-align: center;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            textarea {
+                font-size: 0.9em;
+            }
+            button {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="logo.jpg" alt="Logo" class="logo">
+        <h1>⚛️ SSP ⚛️</h1>
+        <select id="languageSelector">
+            <option value="solidity">Solidity</option>
+            <option value="javascript">JavaScript</option>
+            <option value="python">Python</option>
+            <option value="ruby">Ruby</option>
+            <option value="c">C</option>
+        </select>
+        <textarea id="inputCode" placeholder='// Insira o código aqui'></textarea>
+        <button onclick="convertCode()">Converter</button>
+        <div class="output" id="outputCode"></div>
+        <div class="error-message" id="errorMessage"></div>
+        <div class="footer">
+            Todos os direitos reservados à NSC INC
+        </div>
+    </div>
+
+    <script>
+        async function convertCode() {
+            const inputCode = document.getElementById('inputCode').value;
+            const selectedLanguage = document.getElementById('languageSelector').value;
+
+            if (!inputCode.trim()) {
+                displayErrorMessage('Por favor, insira o código antes de converter.');
+                return;
+            }
+
+            const button = document.querySelector('button');
+            button.textContent = 'Convertendo...';
+            button.disabled = true;
+
+            try {
+                const convertedCode = await convertCodeBasedOnLanguage(selectedLanguage, inputCode);
+                document.getElementById('outputCode').innerHTML = convertedCode;
+                clearErrorMessage();
+            } catch (error) {
+                console.error('Erro ao converter o código:', error);
+                displayErrorMessage('Ocorreu um erro ao processar o código.');
+            } finally {
+                button.textContent = 'Converter';
+                button.disabled = false;
+            }
+        }
+
+        async function convertCodeBasedOnLanguage(language, code) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    let convertedCode;
+                    switch (language) {
+                        case 'solidity':
+                            convertedCode = convertSolidityToLua(code);
+                            break;
+                        case 'javascript':
+                            convertedCode = convertJavaScriptToLua(code);
+                            break;
+                        case 'python':
+                            convertedCode = convertPythonToLua(code);
+                            break;
+                        case 'ruby':
+                            convertedCode = convertRubyToLua(code);
+                            break;
+                        case 'c':
+                            convertedCode = convertCToAssemblyOrHDL(code);
+                            break;
+                        default:
+                            convertedCode = '-- Linguagem não suportada';
+                    }
+
+                    resolve(convertedCode);
+                }, 1000);
+            });
+        }
+
+        function convertSolidityToLua(code) {
+            return code
+                .replace(/pragma solidity \^\d+\.\d+\.\d+;/g, '-- Solidity Version')
+                .replace(/contract (\w+)/g, 'function $1()')
+                .replace(/{/g, 'do')
+                .replace(/}/g, 'end')
+                .replace(/uint/g, 'number')
+                .replace(/string/g, 'string')
+                .replace(/public/g, '-- public')
+                .replace(/function/g, 'local function')
+                .replace(/returns \((.*)\)/g, '-- returns $1')
+                .replace(/;/g, '');
+        }
+
+        function convertJavaScriptToLua(code) {
+            return code
+                .replace(/function/g, 'local function')
+                .replace(/var /g, 'local ')
+                .replace(/let /g, 'local ')
+                .replace(/const /g, 'local ')
+                .replace(/console\.log/g, 'print')
+                .replace(/{/g, 'do')
+                .replace(/}/g, 'end')
+                .replace(/;/g, '');
+        }
+
+        function convertPythonToLua(code) {
+            return code
+                .replace(/def /g, 'local function ')
+                .replace(/:/g, ' do')
+                .replace(/return/g, 'return')
+                .replace(/None/g, 'nil')
+                .replace(/True/g, 'true')
+                .replace(/False/g, 'false')
+                .replace(/# /g, '-- ');
+        }
+
+        function convertRubyToLua(code) {
+            return code
+                .replace(/def /g, 'local function ')
+                .replace(/end/g, 'end')
+                .replace(/puts /g, 'print ')
+                .replace(/:/g, ' do')
+                .replace(/nil/g, 'nil')
+                .replace(/true/g, 'true')
+                .replace(/false/g, 'false')
+                .replace(/# /g, '-- ');
+        }
+
+        function convertCToAssemblyOrHDL(code) {
+            const assemblyCode = convertCToAssembly(code);
+            const hdlCode = convertCToHDL(code);
+
+            return `<strong>Assembly Code:</strong><pre>${assemblyCode}</pre><br><strong>HDL Code:</strong><pre>${hdlCode}</pre>`;
+        }
+
+        function convertCToAssembly(code) {
+            // Aqui você deve implementar a lógica de conversão de C para Assembly.
+            // Esta função é um exemplo e deve ser substituída pela lógica real.
+            return code
+                .replace(/int /g, 'int ')
+                .replace(/void /g, 'void ')
+                .replace(/return /g, 'return ')
+                .replace(/{/g, '{')
+                .replace(/}/g, '}')
+                .replace(/;/g, ';');
+        }
+
+        function convertCToHDL(code) {
+            // Aqui você deve implementar a lógica de conversão de C para HDL.
+            // Esta função é um exemplo e deve ser substituída pela lógica real.
+            return code
+                .replace(/int /g, 'int ')
+                .replace(/void /g, 'void ')
+                .replace(/return /g, 'return ')
+                .replace(/{/g, '{')
+                .replace(/}/g, '}')
+                .replace(/;/g, ';');
+        }
+
+        function displayErrorMessage(message) {
+            const errorMessageDiv = document.getElementById('errorMessage');
+            errorMessageDiv.textContent = message;
+        }
+
+        function clearErrorMessage() {
+            const errorMessageDiv = document.getElementById('errorMessage');
+            errorMessageDiv.textContent = '';
+        }
+    </script>
+</body>
+</html>
